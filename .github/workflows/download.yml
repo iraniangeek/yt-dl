@@ -18,7 +18,7 @@ on:
           - 480
           - 360
       cookies:
-        description: '(Optional) Netscape cookies file (base64 encoded)'
+        description: '(Optional) Netscape cookies file (paste raw content)'
         required: false
         type: string
 
@@ -38,15 +38,31 @@ jobs:
       - name: Install yt-dlp
         run: pip install -U yt-dlp
 
-      - name: Decode cookies (if provided)
+      - name: Start WARP Proxy
+        run: |
+          echo "Starting Cloudflare WARP container..."
+          docker run -d \
+            --name warp \
+            --restart=no \
+            -p 1080:1080 \
+            --cap-add NET_ADMIN \
+            --sysctl net.ipv6.conf.all.disable_ipv6=0 \
+            --sysctl net.ipv4.conf.all.src_valid_mark=1 \
+            caomingjun/warp
+          echo "Waiting for WARP to initialize (30 seconds)..."
+          sleep 30
+          curl -x socks5h://127.0.0.1:1080 https://cloudflare.com/cdn-cgi/trace -s || echo "WARP may not be ready, will try anyway"
+
+      - name: Save cookies (if provided)
         if: ${{ github.event.inputs.cookies != '' }}
-        run: echo "${{ github.event.inputs.cookies }}" | base64 -d > cookies.txt
+        run: printf '%s\n' "${{ github.event.inputs.cookies }}" > cookies.txt
 
       - name: Run downloader
         env:
           VIDEO_URL: ${{ github.event.inputs.video_url }}
           QUALITY: ${{ github.event.inputs.quality }}
           COOKIES_FILE: ${{ github.event.inputs.cookies != '' && 'cookies.txt' || '' }}
+          PROXY_ADDRESS: socks5://127.0.0.1:1080
         run: go run main.go
 
       - name: Upload artifact
