@@ -81,6 +81,8 @@ func main() {
 }
 
 // formatSelector builds a yt-dlp format string that tries the chosen
+// quality first, then 1080p, then 720p, then 480p, then 360p, and
+// finally falls back to the best available stream.
 func formatSelector(q string) string {
 	// Preferred order, including the primary choice
 	heights := []string{q, "1080", "720", "480", "360"}
