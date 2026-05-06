@@ -6,9 +6,10 @@ Download any YouTube video in best quality directly into your GitHub repository.
 ### Usage
 1. **Fork this repository**
 2. Go to the **Actions** tab and enable workflows
-3. Select **Download YouTube Video** (in the left sidebar) → **Run workflow** (in the right part of the blue section)
-4. Paste the YouTube URL and run
-5. After completion, the `download` folder will contain video chunks (e.g., `video.zip.00`, `video.zip.01`)
+3. Select **Download YouTube Video** (in the left sidebar)
+4. Then **Run workflow** (in the right part of the blue section)
+5. Paste the YouTube URL and run
+6. After completion, the `download` folder will contain video chunks (e.g., `video.zip.00`, `video.zip.01`)
 
 <br>
 
