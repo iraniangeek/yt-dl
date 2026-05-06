@@ -37,8 +37,8 @@ jobs:
             --sysctl net.ipv6.conf.all.disable_ipv6=0 \
             --sysctl net.ipv4.conf.all.src_valid_mark=1 \
             caomingjun/warp
-          echo "Waiting for WARP to initialize (30 seconds)..."
-          sleep 30
+          echo "Waiting for WARP to initialize (45 seconds)..."
+          sleep 45
           curl -x socks5h://127.0.0.1:1080 https://cloudflare.com/cdn-cgi/trace -s || echo "WARP may not be ready, will try anyway"
 
       - name: Clean previous downloads
@@ -46,7 +46,7 @@ jobs:
           rm -rf download/*
           echo "Download folder cleaned"
 
-      - name: Run downloader (best quality, no cookies)
+      - name: Run downloader
         env:
           VIDEO_URL: ${{ github.event.inputs.video_url }}
           PROXY_ADDRESS: socks5://127.0.0.1:1080
@@ -56,8 +56,8 @@ jobs:
         run: |
           cd download
           split -b 90M -d video.zip video.zip.
-          rm video.zip
-          ls -la
+          rm video.zip   # remove original after splitting
+          ls -la         # verify chunks
 
       - name: Commit chunks to repository
         run: |
